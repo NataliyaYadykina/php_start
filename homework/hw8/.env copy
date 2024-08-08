@@ -1,0 +1,9 @@
+DB_NAME=application1
+DB_USER=application_user
+DB_PASSWORD=geekbrains!23
+DB_ROOT_PASSWORD=GeekBrains856
+SESSION_SAVE_HANDLER=memcache
+MEMCACHE_HOST=memcache
+MEMCACHE_PORT=11211
+XDEBUG_MODE=develop,debug
+XDEBUG_CONFIG=client_host=host.docker.internal,start_with_request=yes

@@ -7,46 +7,50 @@ use Geekbrains\Application1\Application\Render;
 use Geekbrains\Application1\Application\Auth;
 use Geekbrains\Application1\Domain\Models\User;
 
-class UserController extends AbstractController {
+class UserController extends AbstractController
+{
 
     protected array $actionsPermissions = [
         'actionHash' => ['admin', 'some'],
         'actionSave' => ['admin']
     ];
 
-    public function actionIndex(): string {
+    public function actionIndex(): string
+    {
         $users = User::getAllUsersFromStorage();
-        
+
         $render = new Render();
 
-        if(!$users){
+        if (!$users) {
             return $render->renderPage(
-                'user-empty.tpl', 
+                'user-empty.tpl',
                 [
                     'title' => 'Список пользователей в хранилище',
                     'message' => "Список пуст или не найден"
-                ]);
-        }
-        else{
+                ]
+            );
+        } else {
             return $render->renderPage(
-                'user-index.tpl', 
+                'user-index.tpl',
                 [
                     'title' => 'Список пользователей в хранилище',
                     'users' => $users
-                ]);
+                ]
+            );
         }
     }
 
-    public function actionIndexRefresh(){
+    public function actionIndexRefresh()
+    {
         $limit = null;
-        
-        if(isset($_POST['maxId']) && ($_POST['maxId'] > 0)){
+
+        if (isset($_POST['maxId']) && ($_POST['maxId'] > 0)) {
             $limit = $_POST['maxId'];
         }
 
         $users = User::getAllUsersFromStorage($limit);
         $usersData = [];
-        
+
         /*
         $render = new Render();
  
@@ -68,8 +72,8 @@ class UserController extends AbstractController {
         }
         */
 
-        if(count($users) > 0) {
-            foreach($users as $user){
+        if (count($users) > 0) {
+            foreach ($users as $user) {
                 $usersData[] = $user->getUserDataAsArray();
             }
         }
@@ -77,8 +81,9 @@ class UserController extends AbstractController {
         return json_encode($usersData);
     }
 
-    public function actionSave(): string {
-        if(User::validateRequestData()) {
+    public function actionSave(): string
+    {
+        if (User::validateRequestData()) {
             $user = new User();
             $user->setParamsFromRequestData();
             $user->saveToStorage();
@@ -86,60 +91,66 @@ class UserController extends AbstractController {
             $render = new Render();
 
             return $render->renderPage(
-                'user-created.tpl', 
+                'user-created.tpl',
                 [
                     'title' => 'Пользователь создан',
                     'message' => "Создан пользователь " . $user->getUserName() . " " . $user->getUserLastName()
-                ]);
-        }
-        else {
+                ]
+            );
+        } else {
             throw new \Exception("Переданные данные некорректны");
         }
     }
 
-    public function actionEdit(): string {
+    public function actionEdit(): string
+    {
         $render = new Render();
-        
+
         return $render->renderPageWithForm(
-                'user-form.tpl', 
-                [
-                    'title' => 'Форма создания пользователя'
-                ]);
+            'user-form.tpl',
+            [
+                'title' => 'Форма создания пользователя'
+            ]
+        );
     }
 
-    public function actionAuth(): string {
+    public function actionAuth(): string
+    {
         $render = new Render();
-        
+
         return $render->renderPageWithForm(
-                'user-auth.tpl', 
-                [
-                    'title' => 'Форма логина'
-                ]);
+            'user-auth.tpl',
+            [
+                'title' => 'Форма логина'
+            ]
+        );
     }
 
-    public function actionHash(): string {
+    public function actionHash(): string
+    {
         return Auth::getPasswordHash($_GET['pass_string']);
     }
 
-    public function actionLogin(): string {
+    public function actionLogin(): string
+    {
         $result = false;
 
-        if(isset($_POST['login']) && isset($_POST['password'])){
+        if (isset($_POST['login']) && isset($_POST['password'])) {
             $result = Application::$auth->proceedAuth($_POST['login'], $_POST['password']);
         }
-        
-        if(!$result){
+
+        if (!$result) {
             $render = new Render();
 
             return $render->renderPageWithForm(
-                'user-auth.tpl', 
+                'user-auth.tpl',
                 [
                     'title' => 'Форма логина',
                     'auth-success' => false,
                     'auth-error' => 'Неверные логин или пароль'
-                ]);
-        }
-        else{
+                ]
+            );
+        } else {
             header('Location: /');
             return "";
         }

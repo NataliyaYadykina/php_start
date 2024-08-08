@@ -1,0 +1,3 @@
+[2024-08-08T13:40:30.339565+00:00] application_logger.ERROR: Вызванной страницы не существует | Попытка вызова адреса /gfgdsvc [] []
+[2024-08-08T13:45:15.564465+00:00] application_logger.ERROR: Вызванной страницы не существует | Попытка вызова адреса /456 [] []
+[2024-08-08T13:45:38.518770+00:00] application_logger.ERROR: Метод actionAdmin не существует в контроллере Geekbrains\Application1\Domain\Controllers\UserController | Попытка вызова адреса /user/admin [] []
