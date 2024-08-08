@@ -1,0 +1,22 @@
+<p>Список пользователей в хранилище</p>
+<a href="/user/edit">Добавить пользователя</a>
+<ul id="navigation">
+    {% for user in users %}
+        <li>
+            <a href="/user/show/?id={{ user.getUserId() }}">
+                {{ user.getUserName() }} 
+                {{ user.getUserLastName() }}. 
+                День рождения: 
+                
+                {% if user.getUserBirthday() is empty %}
+                    <b>не установлен</b>
+                {% else %}
+                    {{ user.getUserBirthday() | date('d.m.Y') }}
+                {% endif %}
+            </a>
+            <a href="/user/edit/?user_id={{user.userId}}">--Изменить</a>
+            <a href="/user/delete/?id={{ user.getUserId() }}"> --Удалить</a>
+        </li>
+    {% endfor %}
+</ul>
+

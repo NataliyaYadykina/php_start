@@ -1,0 +1,2 @@
+[2024-08-07T15:56:45.063299+00:00] application_logger.ERROR: Метод actionHaker не существует в контроллере Geekbrains\Application1\Domain\Controllers\UserController | Попытка вызова адреса /user/haker/ [] []
+[2024-08-07T15:56:54.301450+00:00] application_logger.ERROR: Метод actionAdmin не существует в контроллере Geekbrains\Application1\Domain\Controllers\UserController | Попытка вызова адреса /user/admin [] []
