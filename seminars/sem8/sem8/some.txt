@@ -1,0 +1,8 @@
+create table `memory_log` (
+    `id_memory_log` int not null auto_increment,
+    `user_agent` varchar(500) null,
+    `log_datetime` datetime null,
+    `url` text null,
+    `memory_volume` int null,
+    primary key (`id_memory_log`)
+);
