@@ -1,5 +1,7 @@
 <h3>Список пользователей в хранилище</h3>
+{% if isAdmin %}
 <a href="/user/edit/" class="btn btn-outline-primary me-2">Добавить пользователя</a>
+{% endif %}
 <div class="table-responsive medium">
 	<table class="table table-striped table-sm">
 		<thead>
