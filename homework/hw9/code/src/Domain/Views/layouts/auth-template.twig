@@ -1,0 +1,8 @@
+{% if not user_authorized %}
+	<div class="col-md-3 text-end">
+		<a href="/user/login/" class="btn btn-outline-primary me-2">Войти</a>
+	</div>
+{% else %}
+	<p>Добро пожаловать на сайт, {{ user_name }} {{ user_lastname }}!</p>
+	<a href="/user/logout/" class="btn btn-outline-primary me-2">Выйти из системы</a>
+{% endif %}

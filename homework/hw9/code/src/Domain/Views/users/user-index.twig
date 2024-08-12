@@ -1,0 +1,77 @@
+<h3>Список пользователей в хранилище</h3>
+<a href="/user/edit/" class="btn btn-outline-primary me-2">Добавить пользователя</a>
+<div class="table-responsive medium">
+	<table class="table table-striped table-sm">
+		<thead>
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Имя</th>
+				<th scope="col">Фамилия</th>
+				<th scope="col">День рождения</th>
+				{% if isAdmin %}
+				<th scope="col">Редактирование</th>
+				<th scope="col">Удаление</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in users %}
+			<tr id="{{ user.getUserId() }}">
+			    
+				<td><a href="/user/show/?id={{ user.getUserId() }}">{{ user.getUserId() }}</a></td>
+				<td>{{ user.getUserName() }}</td>
+				<td>{{ user.getUserLastName() }}</td>
+				
+				<td>{% if user.getUserBirthday() is empty %}
+				    <b>не установлен</b>
+				{% else %}
+				    {{ user.getUserBirthday() | date('d.m.Y') }}
+				{% endif %}</td>
+			    {% if isAdmin %}
+			    <td><a  class="btn btn-outline-primary me-2" href="/user/edit/?user_id={{user.userId}}">Изменить</a></td>
+			    <td><a  class="btn btn-outline-primary me-2" href="/user/delete/?id={{ user.getUserId() }}"> Удалить</a></td>
+			    {% endif %}
+			</tr>
+			{% endfor %}
+		</tbody>
+    </table>
+</div>
+    
+<script>
+    let maxId = $('.table-responsive tbody tr:last-child td:first-child').text();
+  
+    setInterval(function () {
+      $.ajax({
+          method: 'POST',
+          url: "/user/indexRefresh/",
+          data: { maxId: maxId }
+      }).done(function (response) {
+      	  console.log('Ответ от сервера:', response);
+          // $('.content-template').html(response);
+
+          let users = $.parseJSON(response);
+          
+          if(users.length != 0){
+            for(var k in users){
+
+              let row = "<tr id='" + users[k].id + "'>";
+              row += "<td><a href='/user/show/?id=" + users[k].id + "'>" + users[k].id + "</a></td>";
+              maxId = users[k].id;
+
+              row += "<td>" + users[k].username + "</td>";
+              row += "<td>" + users[k].userlastname + "</td>";
+              row += "<td>" + users[k].userbirthday + "</td>";
+              row += "<td><a class='btn btn-outline-primary me-2' href='/user/edit/?user_id=" + users[k].id + "'>Изменить</a></td>";
+              row += "<td><a class='btn btn-outline-primary me-2' href='/user/delete/?id=" + users[k].id + "'>Удалить</a></td>";
+
+              row += "</tr>";
+
+              $('.content-template tbody').append(row);
+            }
+            
+          }
+          
+      });
+    }, 10000);
+</script>
+
