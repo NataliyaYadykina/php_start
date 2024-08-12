@@ -40,7 +40,7 @@ class UserController extends AbstractController
                 [
                     'title' => 'Список пользователей в хранилище',
                     'users' => $users,
-                    'isAdmin' => User::isAdmin($_SESSION['id_user'] ?? null)
+                    'isAdmin' => User::isAdmin($_SESSION['auth']['id_user'] ?? null)
                 ]
             );
         }
@@ -119,19 +119,21 @@ class UserController extends AbstractController
         );
     }
 
-    public function actionDelete(): string
-    {  
-    
+    public function actionDelete(): void
+    {
+
         $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
         if (User::exists($id)) {
             User::deleteFromStorage($id);
 
             $render = new Render();
 
-            return $render->renderPage(
-                'users/user-index.twig',
-                []
-            );
+            header('Location: /user/index/');
+
+            // return $render->renderPage(
+            //     'users/user-index.twig',
+            //     []
+            // );
         } else {
             throw new \Exception("Пользователь не существует");
         }
@@ -139,20 +141,19 @@ class UserController extends AbstractController
 
     public function actionEdit(): string
     {
-    	$action = '/user/save';
-    	$render = new Render();
-    	
+        $action = '/user/save';
+        $render = new Render();
+
         if (!isset($_GET['user_id'])) {
             return $render->renderPageWithForm(
-		    'users/user-form.twig',
-		    [
-		        'title' => 'Форма создания пользователя',
-		        'action' => $action
-		    ]
+                'users/user-form.twig',
+                [
+                    'title' => 'Форма создания пользователя',
+                    'action' => $action
+                ]
             );
-        
         }
-        
+
         $id = isset($_GET['user_id']) && is_numeric($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 
         if (User::exists($id)) {
@@ -160,20 +161,18 @@ class UserController extends AbstractController
             $action = '/user/update';
             $userData = User::getUserDataByID($userId);
             return $render->renderPageWithForm(
-		    'users/user-form.twig',
-		    [
-		        'title' => 'Форма редактирования пользователя',
-		        'user_data' => $userData ?? [],
-		        'action' => $action
-		    ]
+                'users/user-form.twig',
+                [
+                    'title' => 'Форма редактирования пользователя',
+                    'user_data' => $userData ?? [],
+                    'action' => $action
+                ]
             );
         } else {
             throw new \Exception("Ошибка! Вы хотите изменить несуществующего пользователя.");
         }
-
-        
     }
-    
+
     public function actionHash(): string
     {
         if (isset($_GET['pass_string']) && !empty($_GET['pass_string'])) {
@@ -182,7 +181,7 @@ class UserController extends AbstractController
             throw new \Exception("Невозможно сгенерировать хэш. Не передан пароль.");
         }
     }
-    
+
     public function actionAuth(): string
     {
         $render = new Render();
@@ -193,7 +192,7 @@ class UserController extends AbstractController
             ]
         );
     }
-    
+
     public function actionLogin(): string
     {
         $result = false;
@@ -212,7 +211,7 @@ class UserController extends AbstractController
                 User::setToken($_SESSION['auth']['id_user'], $token);
             }
         }
-	
+
         if (!isset($_POST['csrf_token'])) {
             $render = new Render();
 
@@ -224,9 +223,9 @@ class UserController extends AbstractController
                 ]
             );
         }
-	
+
         if (!$result) {
-            
+
             $render = new Render();
             return $render->renderPageWithForm(
                 'users/user-auth.twig',
@@ -241,33 +240,35 @@ class UserController extends AbstractController
             return "";
         }
     }
-    
-    public function actionLogout(): void {
+
+    public function actionLogout(): void
+    {
         User::destroyToken();
         session_destroy();
         unset($_SESSION['auth']);
         header("Location: /");
         die();
     }
-    
-    public function actionIndexRefresh(){
-    	$limit = null;
-    	
-    	if(isset($_POST['maxId']) && $_POST['maxId'] > 0) {
-    		$limit = $_POST['maxId'];
-    	}
-	$users = User::getAllUsersFromStorage($limit);
-	$usersData = [];
-	
-	if(count($users) > 0) {
-            foreach($users as $user){
+
+    public function actionIndexRefresh()
+    {
+        $limit = null;
+
+        if (isset($_POST['maxId']) && $_POST['maxId'] > 0) {
+            $limit = $_POST['maxId'];
+        }
+        $users = User::getAllUsersFromStorage($limit);
+        $usersData = [];
+
+        if (count($users) > 0) {
+            foreach ($users as $user) {
                 $usersData[] = $user->getUserDataAsArray();
             }
         }
 
         return json_encode($usersData);
-	
-	/*$render = new Render();
+
+        /*$render = new Render();
 	if(!$users){
 		return $render->renderPartial(
 			'users/user-empty.twig',
