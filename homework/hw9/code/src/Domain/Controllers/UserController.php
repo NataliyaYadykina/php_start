@@ -129,6 +129,7 @@ class UserController extends AbstractController
             $render = new Render();
 
             header('Location: /user/index/');
+            die();
 
             // return $render->renderPage(
             //     'users/user-index.twig',
